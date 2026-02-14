@@ -1,5 +1,4 @@
 import TestSuite from "./test-suite.js";
-
 /**
  * 테스트 결과 리포팅을 위한 베이스 추상 클래스입니다.
  */
@@ -22,6 +21,7 @@ class Reporter {
 /**
  * 테스트 결과를 HTML 양식으로 변환하는 리포터 클래스입니다.
  * @extends Reporter
+ * @description AI로 생성되고 일부 수정됨.
  */
 class HtmlReporter extends Reporter {
 	/**
@@ -129,6 +129,7 @@ class HtmlReporter extends Reporter {
 /**
  * 테스트 결과를 브라우저 개발자 도구 콘솔에 출력하는 리포터 클래스입니다.
  * @extends Reporter
+ * @description AI로 생성되고 일부 수정됨.
  */
 class ConsoleReporter extends Reporter {
 
