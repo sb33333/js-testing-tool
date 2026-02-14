@@ -1,20 +1,33 @@
 import TestSuite from "./test-suite.js";
 
-
+/**
+ * 테스트 결과 리포팅을 위한 베이스 추상 클래스입니다.
+ */
 class Reporter {
+	/**
+	 * @returns {number} 느린 테스트를 판단하는 기준 시간 (ms)
+	 */
 	static get DURATION () {
 		return 1000;
 	}
-	static generate(testData) {
+	/**
+	 * 리포트를 생성합니다. 하위 클래스에서 구현해야 합니다.
+	 * @param {TestSuite} testSuite - 결과를 추출할 테스트 스위트 인스턴스
+	 */
+	static generate(testSuite) {
 		throw new Error("not implemented");
 	}
 }
 
+/**
+ * 테스트 결과를 HTML 양식으로 변환하는 리포터 클래스입니다.
+ * @extends Reporter
+ */
 class HtmlReporter extends Reporter {
 	/**
-	 *
-	 * @param {TestSuite} testSuite
-	 * @returns {Promise<string>} report html string
+	 * TestSuite 결과를 바탕으로 HTML 리포트 문자열을 생성합니다.
+	 * @param {TestSuite} testSuite - 결과를 추출할 테스트 스위트 인스턴스
+	 * @returns {Promise<string>} 생성된 HTML 문자열
 	 */
 	static async generate(testSuite) {
 		const testData = await testSuite.result();
@@ -101,19 +114,29 @@ class HtmlReporter extends Reporter {
 	`;
 	}
 
+	/**
+	 * HTML 특수 문자를 이스케이프 처리합니다.
+	 * @param {string|*} str - 치환할 문자열
+	 * @returns {string} 안전하게 변환된 문자열
+	 * @private
+	 */
 	static _escapeHtml(str) {
 		if (!str) return "";
 		return str.toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 	}
 }
 
+/**
+ * 테스트 결과를 브라우저 개발자 도구 콘솔에 출력하는 리포터 클래스입니다.
+ * @extends Reporter
+ */
 class ConsoleReporter extends Reporter {
 
 	/**
-	 *
-	 * @param {TestSuite} testSuite
-	 * @returns {Promise<void>} print test results to console
-	*/
+	 * 테스트 결과를 콘솔에 포맷팅하여 출력합니다.
+	 * @param {TestSuite} testSuite - 결과를 추출할 테스트 스위트 인스턴스
+	 * @returns {Promise<void>}
+	 */
 	static async generate(testSuite) {
 		const testData = await testSuite.result();
 		const { testSuiteName, runs, passed, failed } = testData;
@@ -153,10 +176,14 @@ class ConsoleReporter extends Reporter {
 		console.log("\n");
 	}
 
+	/**
+	 * 기대값과 실제값의 차이(Diff)를 콘솔에 출력합니다.
+	 * @param {Object} err - AssertionError 또는 에러 정보 객체
+	 * @private
+	 */
 	static _logDiff(err) {
 		const msg = err?.message || String(err);
 		const {actual, expected} = err?.serialized || {};
-
 		if (actual && expected) {
 			console.log(`  Expected: %c${expected}`, "color: #2ecc71; background: #e3fcef; padding: 2px;");
 			console.log(`  Actual:   %c${actual}`, "color: #d63031; background: #ffe9e9; padding: 2px;");
