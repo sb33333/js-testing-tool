@@ -6,9 +6,9 @@
 
 ## 🛠 주요 특징
 
-- **Easy Assertion**: `equals`, `containsOf` 등 직관적인 테스트 단언문 제공
-- **Async Ready**: 비동기 함수(`async/await`) 테스트 케이스 지원
-- **Visual Reporting**:
+- **Assertion**: `equals`, `containsOf` 등 테스트 단언문 제공
+- **Async**: 비동기 함수(`async/await`) 테스트 케이스 지원
+- **Reporting**:
   - **HTML Reporter**: 대시보드 형태의 UI 리포트 생성
   - **Console Reporter**: 브라우저 콘솔을 활용한 로그
 - **Debugging**: 실패한 테스트의 실제값(Actual)과 기대값(Expected)을 JSON으로 직렬화하여 상세 비교 제공
