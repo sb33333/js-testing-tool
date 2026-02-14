@@ -12,7 +12,19 @@
   - **HTML Reporter**: 대시보드 형태의 UI 리포트 생성
   - **Console Reporter**: 브라우저 콘솔을 활용한 로그
 - **Debugging**: 실패한 테스트의 실제값(Actual)과 기대값(Expected)을 JSON으로 직렬화하여 상세 비교 제공
+- **⚠️ 테스트 순서 보장** (Sequential Execution)
+  - `testSuite.test()` 메서드는 **Promise**를 반환합니다. 기본적으로 테스트들은 비동기로 등록되지만, <br>**특정 테스트가 반드시 종료된 후 다음 테스트가 실행되어야 한다면** `await` 키워드를 사용하세요.
 
+```javascript
+  // 순서가 중요한 경우 (예: 로그인 후 프로필 조회)
+  await suite.test(async (assert) => {
+    // 로그인 로직...
+  }, "1. 로그인 테스트");
+
+  await suite.test(async (assert) => {
+    // 프로필 조회 로직 (로그인이 완료된 상태여야 함)
+  }, "2. 프로필 조회 테스트");
+  ```
 ---
 
 ## 📂 프로젝트 구조
