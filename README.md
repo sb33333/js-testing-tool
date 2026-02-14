@@ -25,7 +25,7 @@
 │   ├── reporter.js
 │   ├── test-result.js
 │   ├── test-suite.js
-│   └── example/
+│   └── example/             # 사용 예제
 │       ├── index.html
 │       └── index.js
 │
