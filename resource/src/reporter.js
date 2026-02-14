@@ -164,7 +164,7 @@ class ConsoleReporter extends Reporter {
 			);
 
 			console.log("%c[Test Code]", "color: #3498db; font-weight: bold;");
-			console.log(testCode.toString());
+			console.log(testCode);
 
 			if (!result) {
 				console.log("%c[Failure Details]", "color: #e67e22; font-weight: bold;");
