@@ -20,7 +20,7 @@
 ```text
 (project root)
 │
-├── resource/           # 프레임워크 핵심 소스 코드
+├── resource/               # 테스트 도구 소스 코드
 │   ├── assertion-error.js
 │   ├── reporter.js
 │   ├── test-result.js
@@ -29,7 +29,7 @@
 │       ├── index.html
 │       └── index.js
 │
-└── exec/               # 샘플 실행을 위한 도구 (추가)
+└── exec/                    # 샘플 실행을 위한 도구
     ├── resource-server.jar  # 정적 자원 서빙을 위한 즉석 실행 Web 서버
     └── run-web-server.bat   # 웹 서버 실행 배치 파일 (포트: 9999)
 ```
