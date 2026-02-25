@@ -11,7 +11,7 @@ export default class AssertionError extends Error {
 	 * @param {string} [message] - 출력할 에러 메시지 (생략 시 기본 형식 사용)
 	 * @param {Error} [nestedError] - 원인 에러
 	 */
-	constructor(actual, expected, message, cause) {
+	constructor(actual, expected, message, nestedError) {
 		var _actual = actual;
 		var _expected = expected;
 		var actual_typeof = (typeof actual === "object");
