@@ -9,7 +9,7 @@ export default class AssertionError extends Error {
 	 * @param {*} actual - 실제 결과값
 	 * @param {*} expected - 기대했던 결과값
 	 * @param {string} [message] - 출력할 에러 메시지 (생략 시 기본 형식 사용)
-	 * @param {Object} [cause] - 에러의 원인이 되는 추가 정보 객체
+	 * @param {Error} [nestedError] - 원인 에러
 	 */
 	constructor(actual, expected, message, cause) {
 		var _actual = actual;
@@ -20,36 +20,13 @@ export default class AssertionError extends Error {
 		var expected_serialized = (expected_typeof) ? JSON.stringify (_expected, null, 2) : _expected;
 		var _message = message || `actual:::${actual_serialized}\nexpected:::${expected_serialized}`;
 
-		var _cause = {};
-		if (cause) _cause = Object.assign(cause);
-		_cause = Object.assign(
-			_cause,
-			{
-				actual:(actual_typeof)? JSON.parse(actual_serialized):_actual,
-				expected: (expected_typeof) ?JSON.parse(expected_serialized):_expected
-			}
-		);
-		super(_message, {cause: _cause});
+		super(_message, {cause: nestedError});
 		this._actual = _actual;
 		this._expected = _expected;
 		this._actual_typeof = actual_typeof;
 		this._actual_serialized = actual_serialized;
 		this._expected_typeof = expected_typeof;
 		this._expected_serialized = expected_serialized;
-	}
-
-	/**
-	 * 일반 객체나 기존 에러 객체로부터 AssertionError 인스턴스를 생성하는 정적 팩토리 메서드입니다.
-	 * @param {Object} assertionError - 에러 정보를 담은 객체
-	 * @param {*} assertionError.actual - 실제 값
-	 * @param {*} assertionError.expected - 기대 값
-	 * @param {string} assertionError.message - 메시지
-	 * @param {Object} [assertionError.cause] - 원인 객체
-	 * @returns {AssertionError} 새로운 AssertionError 인스턴스
-	 */
-	static of (assertionError) {
-		var {actual, expected, message, cause} = assertionError;
-		return new AssertionError(actual, expected, message, cause);
 	}
 
 	/** @returns {*} 원래의 실제 값 */
