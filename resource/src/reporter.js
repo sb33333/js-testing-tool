@@ -183,14 +183,12 @@ class ConsoleReporter extends Reporter {
 	 * @private
 	 */
 	static _logDiff(err) {
-		const msg = err?.message || String(err);
 		const {actual, expected} = err?.serialized || {};
 		if (actual && expected) {
 			console.log(`  Expected: %c${expected}`, "color: #2ecc71; background: #e3fcef; padding: 2px;");
 			console.log(`  Actual:   %c${actual}`, "color: #d63031; background: #ffe9e9; padding: 2px;");
-		} else {
-			console.error("  " + msg);
 		}
+	  console.error(` ${err.cause.stack}`);
 	}
 }
 
