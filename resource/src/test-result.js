@@ -10,7 +10,7 @@ export default class TestResult {
 	 * @param {AssertionError|null} errorInfo - 실패 시 발생한 에러 정보
 	 * @param {number} duration - 실행 소요 시간 (ms)
 	 * @param {string} description - 테스트에 대한 설명
-	 */
+	*/
 	constructor (id, result, testCode, errorInfo, duration, description) {
 		if(isNaN(id)) throw new Error("id should be numeric value.", {cause:{id}});
 		this._id = id;

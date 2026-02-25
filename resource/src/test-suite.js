@@ -19,7 +19,7 @@ export default class TestSuite {
 		 * 테스트 결과가 기대치와 일치하는지 검증하는 **테스트 단언(Assertion) 객체**입니다.
 		 * 각 테스트 케이스 내에서 실제 값(actual)과 기대 값(expected)을 비교하여,
 		 * 조건이 충족되지 않을 경우 `AssertionError`를 발생시켜 테스트 실패를 알립니다.
-		 * @namespace
+		 * @namespace assert
 		 * @property {Function} equals - 두 값의 엄격한 일치(===) 여부 확인
 		 * @property {Function} hasEqualProperties - 두 객체의 속성이 동일한지 확인
 		 * @property {Function} isSubsetOf - actual이 expected의 부분 집합인지 확인
@@ -28,9 +28,21 @@ export default class TestSuite {
 		 */
 		this._assert = (() => {
 			return {
+				/**
+				 * 두 값이 엄격하게 일치하는지 확인합니다.
+				 * @memberof assert
+				 * @param {*} actual
+				 * @param {*} expected
+				 */
 				equals: (actual, expected) => {
 					if (actual !== expected) throw new AssertionError(actual, expected);
 				},
+				/**
+				 * 두 객체가 동일한 속성과 값을 가지고 있는지 확인합니다.
+				 * @memberof assert
+				 * @param {*} actual
+				 * @param {*} expected
+				 */
 				hasEqualProperties: (actual, expected) => {
 					if (typeof actual !== "object" || typeof expected !== "object") throw new AssertionError(actual, expected, "target should be 'object'.");
 					if (
@@ -49,6 +61,12 @@ export default class TestSuite {
 						;
 					if (!check) throw new AssertionError(actual, expected);
 				},
+				/**
+				 * actual이 expected의 부분 집합인지 확인합니다. actual의 모든 속성과 값이 expected에 존재해야 합니다.
+				 * @memberof assert
+				 * @param {*} actual
+				 * @param {*} expected
+				 */
 				isSubsetOf: (actual, expected) => {
 					if (typeof actual !== "object" || typeof expected !== "object") throw new AssertionError(actual, expected, "target should be 'object'.");
 					if (
@@ -63,6 +81,12 @@ export default class TestSuite {
 						;
 					if (!check) throw new AssertionError(actual, expected);
 				},
+				/**
+				 * actual이 expected의 속성들을 포함하는지 확인합니다. expected의 모든 속성과 값이 actual에 존재해야 합니다.
+				 * @memberof assert
+				 * @param {*} actual
+				 * @param {*} expected
+				 */
 				containsOf: (actual, expected) => {
 					if (typeof actual !== "object" || typeof expected !== "object") throw new AssertionError(actual, expected, "target should be 'object'.");
 					if (
@@ -76,6 +100,11 @@ export default class TestSuite {
 					});
 					if (!check) throw new AssertionError(actual, expected);
 				},
+				/**
+				 * 사용자 정의 조건을 검증합니다.
+				 * @memberof assert
+				 * @param {function(): boolean} predicate - 조건을 검증하는 함수
+				 */
 				condition: (predicate) => {
 					var result = predicate();
 					if (!result) throw new AssertionError(false, true);
@@ -90,7 +119,7 @@ export default class TestSuite {
 	 * 전달받은 `testCode` 콜백 함수 내에서 인자로 주어지는 **`assert` 객체(테스트 단언문)**를
 	 * 사용하여 로직의 유효성을 검증해야 합니다. 단언문이 실패하여 에러를 던지면
 	 * 해당 테스트는 '실패(fail)'로 기록됩니다.
-	 * * @param {function(Object): (void|Promise<void>)} testCode - 실행할 테스트 로직.
+	 * * @param {Function(Object): (void|Promise<void>)} testCode - 실행할 테스트 로직.
 	 * 매개변수로 `this._assert` 객체를 전달받아 테스트 단언을 수행해야 합니다.
 	 * @param {string} description - 테스트의 목적이나 기댓값에 대한 설명
 	 * @returns {Promise<TestResult>} 테스트 결과 객체를 반환하는 프로미스
