@@ -112,7 +112,11 @@ export default class TestSuite {
 			} catch (err) {
 				result = false;
 				err.cause = Object.assign({ testCode }, err.cause);
-				error = AssertionError.of(err);
+      if (AssertionError.prototype.isPrototypeOf(err)) {
+        error = new AssertionError(err.actual, err.expected, err.message, err);
+      } else {
+        error = new AssertionError(null, null, err.message, err);
+      }
 			} finally {
 				var duration = window.performance.now() - start;
 				testPromiseResolve(new TestResult(testId, result, testCode, error, duration, description));
