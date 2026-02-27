@@ -14,6 +14,14 @@ export default class TestSuite {
 		this._testSuiteName = testSuiteName || "Test";
 		this._sequence = 0;
 		this._tests = [];
+		this._beforeEach = testInfo => {};
+		this._afterEach = testInfo => {};
+		this._beforeAll = () => {};
+		this._beforeAllPromise = Promise.resolve();
+		this._afterAll = () => {};
+		this._afterAllPromise = Promise.resolve();
+		this._isInitialized = false;
+		this._isCleanedUp = false;
 
 		/**
 		 * 테스트 결과가 기대치와 일치하는지 검증하는 **테스트 단언(Assertion) 객체**입니다.
@@ -130,41 +138,88 @@ export default class TestSuite {
 	 * }, "1 더하기 2는 3이어야 함");
 	 */
 	test(testCode, description) {
-		var promise = new Promise(async (testPromiseResolve) => {
-			var testId = this._sequence++;
-			var result;
-			var start = window.performance.now();
-			var error = null;
-			try {
-				await testCode(this._assert);
-				result = true;
-			} catch (err) {
-				result = false;
-				err.cause = Object.assign({ testCode }, err.cause);
-      if (AssertionError.prototype.isPrototypeOf(err)) {
-        error = new AssertionError(err.actual, err.expected, err.message, err);
-      } else {
-        error = new AssertionError(null, null, err.message, err);
-      }
-			} finally {
-				var duration = window.performance.now() - start;
-				testPromiseResolve(new TestResult(testId, result, testCode, error, duration, description));
-			}
+		this._setup();
+		var promise = this._beforeAllPromise.then(() => {
+			new Promise(async (testPromiseResolve) => {
+				var testId = this._sequence++;
+				var result;
+				var start = window.performance.now();
+				var error = null;
+				var testInfo = {
+					testId, start, testCode, description
+				}
+				try {
+					await (async () => this._beforeEach(testInfo))();
+					await testCode(this._assert);
+					result = true;
+				} catch (err) {
+					result = false;
+					err.cause = Object.assign({ testCode }, err.cause);
+	      if (AssertionError.prototype.isPrototypeOf(err)) {
+	        error = new AssertionError(err.actual, err.expected, err.message, err);
+	      } else {
+	        error = new AssertionError(null, null, err.message, err);
+	      }
+				} finally {
+					var end = window.performance.now();
+					var duration = end - start;
+					testInfo.end = end;
+					await (async () => this._afterEach(testInfo))();
+					testPromiseResolve(new TestResult(testId, result, testCode, error, duration, description));
+				}
+			});
 		});
 		this._tests.push(promise);
 		return promise;
 	}
+
 	/**
 	 * 등록된 모든 테스트의 실행이 완료될 때까지 기다린 후 요약 결과를 반환합니다.
 	 * @returns {Promise<{testSuiteName: string, runs: TestResult[], passed: TestResult[], failed: TestResult[]}>}
 	 */
 	async result() {
 		var ordered = (await Promise.all(this._tests)).slice().sort((testResult1, testResult2) => testResult1.id - testResult2.id);
+		await this._teardown();
 		return {
 			testSuiteName: this._testSuiteName,
 			runs: ordered.slice(),
 			passed: ordered.filter(testResult => testResult.result),
 			failed: ordered.filter(testResult => !testResult.result)
 		}
+	}
+
+	/**
+	 * @param {Function} handler
+	 */
+	set beforeEach (handler) {
+		if (typeof handler !== "function") throw new Error("IllegalArgument::: beforeEach handler must be a function");
+		this._beforeEach = handler;
+	}
+	/**
+	 * @param {Function} handler
+	 */
+	set afterEach (handler) {
+		if (typeof handler !== "function") throw new Error("IllegalArgument::: afterEach handler must be a function");
+		this._afterEach = handler;
+	}
+	/**
+	 * @param {Function} handler
+	 */
+	set beforeAll (handler) {
+		if (typeof handler !== "function") throw new Error("IllegalArgument::: beforeAll handler must be a function");
+		if (this._isInitialized) return false;
+		this._beforeAll = handler;
+		this._isInitialized = false;
+		return true;
+	}
+	/**
+	 * @param {Function} handler
+	 */
+	set afterAll (handler) {
+		if (typeof handler !== "function") throw new Error("IllegalArgument::: afterAll handler must be a function");
+		if (this._isCleanedUp) return false;
+		this._afterAll = handler;
+		this._isCleanedUp = false;
+		return true;
 	}
 }
