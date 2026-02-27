@@ -140,7 +140,7 @@ export default class TestSuite {
 	test(testCode, description) {
 		this._setup();
 		var promise = this._beforeAllPromise.then(() => {
-			new Promise(async (testPromiseResolve) => {
+			return new Promise(async (testPromiseResolve) => {
 				var testId = this._sequence++;
 				var result;
 				var start = window.performance.now();
