@@ -2,6 +2,23 @@ import AssertionError from "./assertion-error.js";
 import TestResult from "./test-result.js";
 
 /**
+ * 테스트 라이프사이클 훅(beforeEach, afterEach)에 전달되는 테스트 실행 정보입니다.
+ * @typeof {Object} TestContext
+ * @property {number} testId
+ * @property {number} start
+ * @property {number} [end]
+ * @property {Function} testCode
+ * @property {string} description
+*/
+
+/**
+ * 테스트 실행 전후에 호출되는 핸들러 함수입니다.
+ * @callback TestHandler
+ * @param {TestContext} testInfo - 테스트 실행 정보
+ * @returns {void|Promise<void>}
+*/
+
+/**
  * 테스트 케이스들을 그룹화하고 실행 및 결과 집계를 관리하는 클래스입니다.
  */
 export default class TestSuite {
@@ -189,20 +206,25 @@ export default class TestSuite {
 	}
 
 	/**
-	 * @param {Function} handler
+	 * 각 테스트 케이스 실행 전에 호출될 콜백 함수를 설정합니다. 
+	 * @param {TestHandler} handler
+	 * @throws {Error} handler가 함수가 아닐 경우 발생.
 	 */
 	set beforeEach (handler) {
 		if (typeof handler !== "function") throw new Error("IllegalArgument::: beforeEach handler must be a function");
 		this._beforeEach = handler;
 	}
 	/**
+	 * 각 테스트 케이스 실행 후에 호출될 콜백 함수를 설정합니다.
 	 * @param {Function} handler
+	 * @throws {Error} handler가 함수가 아닐 경우 발생.
 	 */
 	set afterEach (handler) {
 		if (typeof handler !== "function") throw new Error("IllegalArgument::: afterEach handler must be a function");
 		this._afterEach = handler;
 	}
 	/**
+	 * 테스트 스위트 전체 실행 전에 호출될 콜백 함수를 설정합니다.
 	 * @param {Function} handler
 	 */
 	set beforeAll (handler) {
@@ -213,6 +235,7 @@ export default class TestSuite {
 		return true;
 	}
 	/**
+	 * 테스트 스위트 전체 실행 후에 호출될 콜백 함수를 설정합니다.
 	 * @param {Function} handler
 	 */
 	set afterAll (handler) {
@@ -223,12 +246,21 @@ export default class TestSuite {
 		return true;
 	}
 
+	/**
+	 * 테스트 실행 전 초기화 작업을 수행합니다.
+	 * @private
+	*/
 	_setup () {
 		if (this._isInitialized) return;
 		this._isInitialized = true;
 		this._beforeAllPromise = Promise.resolve(this._beforeAll());
 
 	}
+
+	/**
+	 * 테스트 완료 후 정리 작업을 수행합니다.
+	 * @private
+	 * @returns {Promise<void>} 정리 작업 완료를 나타내는 promise
 	async _teardown () {
 		if (this._isCleanedUp) return;
 this._isCleanedUp = true;
