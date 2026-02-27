@@ -261,6 +261,7 @@ export default class TestSuite {
 	 * 테스트 완료 후 정리 작업을 수행합니다.
 	 * @private
 	 * @returns {Promise<void>} 정리 작업 완료를 나타내는 promise
+	*/
 	async _teardown () {
 		if (this._isCleanedUp) return;
 this._isCleanedUp = true;
