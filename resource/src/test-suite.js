@@ -222,4 +222,17 @@ export default class TestSuite {
 		this._isCleanedUp = false;
 		return true;
 	}
+
+	_setup () {
+		if (this._isInitialized) return;
+		this._isInitialized = true;
+		this._beforeAllPromise = Promise.resolve(this._beforeAll());
+
+	}
+	async _teardown () {
+		if (this._isCleanedUp) return;
+this._isCleanedUp = true;
+		this._afterAllPromise = await Promise.resolve(this._afterAll());
+		
+	}
 }
